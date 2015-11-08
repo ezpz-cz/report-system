@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html" charset="utf-8" />
+        <script src="../../scripts-generic/getJsonFromUrl.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+        <script src="../../scripts-generic/jquery/jquery-1.11.2.min.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function ()
+            {
+                var args = getJsonFromUrl();
+
+                $("#input-nickname").val(args["nickname"]);
+                $("#input-steamid").val(args["steamid"]);
+                $("#input-ip").val(args["ip"]);
+
+                $('#input-length').on('input', function() {
+                    $("#div-time").text(timeToString(parseInt($(this).val())));
+                });
+
+                $('body').on('click', '#button-submit', function () {
+                    /*console.log($("#input-nickname").val());
+                    console.log($("#input-steamid").val());
+                    console.log($("#input-ip").val());
+                    console.log($("#input-length").val());
+                    console.log($("#txt-reason").val());*/
+
+                    var length = parseInt($("#input-length").val());
+
+                    if (length < 0)
+                    {
+                        alert("Délka banu musí být >= 0 !");
+                        return;
+                    }
+
+                    if (isNaN(length))
+                    {
+                        alert("Špatně vyplněná délka banu!");
+                        return;
+                    }
+
+                    if ($("#txt-reason").val() == "")
+                    {
+                        alert("Musíš vyplnit důvod banu!");
+                        return;
+                    }
+
+                    $.ajax(
+                    {
+                        type: "POST",
+                        url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/addban_report.php",
+                        data: {
+                            "nickname": $("#input-nickname").val(),
+                            "steamid": $("#input-steamid").val(),
+                            "ip": $("#input-ip").val(),
+                            "length": $("#input-length").val(),
+                            "reason": $("#txt-reason").val()
+                        },
+                        success: function(response)
+                        {
+                            var responsejson = JSON.parse(response);
+
+                            if (responsejson.success)
+                            {
+                                parent.banSuccess["success"] = true;
+                                parent.banSuccess["ban_id"] = responsejson.ban_id;
+                                parent.$.fancybox.close();
+                            }
+                            else
+                            {
+                                alert("Došlo k chybě při přidávání banu. Zkus to později nebo kontaktuj technika.");
+                            }
+                        }
+                    });
+                });
+            });
+
+            function timeToString(minutes)
+            {
+                if (minutes == 0) {return "PERMANENT";}
+                if (minutes < 0 || isNaN(minutes)) {return "N/A";}
+
+                var timeString = "";
+
+                var months = Math.floor(minutes/43200);
+                timeString += months + " měsíců, ";
+                minutes = minutes % 43200;
+
+                var weeks = Math.floor(minutes/10080);
+                timeString += weeks + " týdnů, ";
+                minutes = minutes % 10080;
+
+                var days = Math.floor(minutes/1440);
+                timeString += days + " dnů, ";
+                minutes = minutes % 1440;
+
+                var hours = Math.floor(minutes/60);
+                minutes = minutes % 60;
+                timeString += hours + " hodin, " + minutes + " minut";
+
+                return timeString;
+            }
+
+            function add(minutes)
+            {
+                var newvalue = parseInt($("#input-length").val()) + minutes;
+
+                $("#input-length").val(newvalue);
+
+                $("#div-time").text(timeToString(newvalue));
+            }
+
+            function subtract(minutes)
+            {
+                var newvalue = parseInt($("#input-length").val()) - minutes;
+
+                if (newvalue < 0)
+                {
+                    $("#input-length").val(0);
+                    $("#div-time").text(timeToString(0));
+                }
+                else
+                {
+                    $("#input-length").val(newvalue);
+                    $("#div-time").text(timeToString(newvalue));
+                }
+            }
+        </script>
+
+        <style>
+            h1 {
+                color: #074e79;
+                background: none;
+                border-bottom: 1px solid #3380C8;
+                padding-left: 1em;
+                text-align: center;
+            }
+            table{
+                margin: 0 auto !important;
+            }
+            td {
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+    <h1>Přidat ban</h1>
+
+
+    <table>
+        <tr>
+            <td><label for="input-nickname">Jméno: </label></td>
+            <td><input type="text" class="form-control" id="input-nickname" name="nickname" readonly="readonly" size="50" /></td>
+        </tr>
+        <tr>
+            <td><label for="input-steamid">SteamID: </label></td>
+            <td><input type="text" class="form-control" id="input-steamid" name="steamid" readonly="readonly" size="50" /></td>
+        </tr>
+        <tr>
+            <td><label for="input-ip">IP: </label></td>
+            <td><input type="text" class="form-control" id="input-ip" name="ip" readonly="readonly" size="50" /></td>
+        </tr>
+        <tr>
+            <td><label for="input-length">Délka banu: </label></td>
+            <td>
+                <input type="number" class="form-control" id="input-length" name="length" size="10" required="required" value="0" min="0"/>
+                minut (0 = permanent) <br />
+                <div id="div-time">PERMANENT</div> <br />
+                <button id="btn-mhour" onclick="subtract(60);">-</button> <button id="btn-phour" onclick="add(60);">+</button> 1 hodina <br />
+                <button id="btn-mday" onclick="subtract(1440);">-</button> <button id="btn-pday" onclick="add(1440);">+</button> 1 den <br />
+                <button id="btn-mweek" onclick="subtract(10080);">-</button> <button id="btn-pweek" onclick="add(10080);">+</button> 1 týden <br />
+                <button id="btn-mmonth" onclick="subtract(43200);">-</button> <button id="btn-pmonth" onclick="add(43200);">+</button> 1 měsíc <br />
+            </td>
+        </tr>
+        <tr>
+            <td><label for="txt-reason">Důvod: </label></td>
+            <td><textarea id="txt-reason" class="form-control" name="reason" wrap="soft" cols="20" rows="4" required="required"></textarea></td>
+        </tr>
+        <tr>
+            <td colspan="2"><button class="btn btn-primary btn-lg btn-block" id="button-submit">Přidat ban!</button></td>
+            <td width="50px"></td>
+        </tr>
+    </table>
+
+    </body>
+</html>

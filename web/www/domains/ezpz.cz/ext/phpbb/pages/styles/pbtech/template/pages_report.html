@@ -1,0 +1,132 @@
+{# Use the space below to include external CSS and JS files
+# Here are some example usages:
+#
+# local files relative to this template file (when stored inside phpBB's style directories):
+# <!-- INCLUDEJS script.js -->
+# <!-- INCLUDECSS ../theme/style.css -->
+#
+# hosted on external sites:
+# <!-- INCLUDEJS http://code.jquery.com/jquery-1.11.2.min.js -->
+# <!-- INCLUDECSS https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css -->
+#
+# local files stored inside the Pages extension:
+# <!-- INCLUDEJS @phpbb_pages/script.js -->
+# <!-- INCLUDECSS @phpbb_pages/../theme/style.css -->
+#
+#}
+<!-- INCLUDECSS @phpbb_pages/../theme/utilities.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/datatable/dataTables.jqueryui.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/jquery-ui/jquery-ui.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/jquery-ui/jquery-ui.structure.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/jquery-ui/jquery-ui.theme.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/datetimepicker/jquery.datetimepicker.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/fancybox/jquery.fancybox.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/qtip2/jquery.qtip.css -->
+
+<!-- INCLUDE overall_header.html -->
+<!-- INCLUDEJS scripts-generic/jquery/jquery-1.11.2.min.js -->
+<!-- INCLUDEJS scripts-generic/jquery-ui/jquery-ui.min.js -->
+<!-- INCLUDEJS scripts-generic/datatables/media/js/jquery.dataTables.min.js -->
+<!-- INCLUDEJS scripts-generic/datatables/media/js/dataTables.jqueryui.min.js -->
+<!-- INCLUDEJS scripts-generic/datetimepicker/jquery.datetimepicker.js -->
+<!-- INCLUDEJS scripts-generic/fancybox/jquery.fancybox.pack.js -->
+<!-- INCLUDEJS scripts-generic/jquery.mousewheel-3.0.6.pack.js -->
+<!-- INCLUDEJS scripts-generic/qtip2/jquery.qtip.min.js -->
+
+<!-- INCLUDEJS scripts-generic/getJsonFromUrl.js -->
+<!-- INCLUDEJS report-g/list_report.js -->
+
+<!-- PHP -->
+    include_once("ext/phpbb/pages/styles/pbtech/template/scripts-generic/checkAdmin.php");
+    include_once("ext/phpbb/pages/styles/pbtech/template/scripts-generic/getPDO.php");
+    include_once("ext/phpbb/pages/styles/pbtech/template/scripts-generic/PDOQuery.php");
+    include_once("ext/phpbb/pages/styles/pbtech/template/scripts-generic/servers.php");
+
+    include_once("ext/phpbb/pages/styles/pbtech/template/report-g/config/translation_report.php");
+<!-- ENDPHP -->
+
+<!-- IF S_GROUP_10 or S_GROUP_14 -->
+    <!-- PHP -->
+        //technicians and main admins
+        //echo "technicians and main admins";
+        session_start();
+
+        global $user;
+        $username = $user->data['username'];
+
+        $isAdmin = true;
+
+        $_SESSION['ezpz_username'] = $username;
+        $_SESSION['ezpz_sb_admin_id'] = getAdminIdByUsername($username);
+        $_SESSION['ezpz_report_permission'] = "1";
+        $_SESSION['ezpz_sb_admin'] = "1";
+    <!-- ENDPHP -->
+<!-- ELSE IF S_GROUP_8 -->
+    <!-- PHP -->
+        //admins
+        //echo "admins";
+        session_start();
+
+        global $user;
+        $username = $user->data['username'];
+
+        $isAdmin = true;
+
+        $_SESSION['ezpz_username'] = $username;
+        $_SESSION['ezpz_sb_admin_id'] = getAdminIdByUsername($username);
+        $_SESSION['ezpz_report_permission'] = "2";
+        $_SESSION['ezpz_sb_admin'] = "1";
+    <!-- ENDPHP -->
+<!-- ELSE -->
+    <!-- PHP -->
+        //other users
+        //echo "other users";
+        session_start();
+        $_SESSION['ezpz_report_permission'] = "3";
+        $_SESSION['ezpz_sb_admin'] = "0";
+    <!-- ENDPHP -->
+<!-- ENDIF -->
+
+<!-- IF S_USER_LANG eq 'cs-cz' -->
+    <langinfo class="lang" value="cze" style="display: hidden;"></langinfo>
+    <!-- PHP -->
+        $translation = getReportTranslation("cze");
+    <!-- ENDPHP -->
+<!-- ELSE -->
+    <langinfo class="lang" value="en" style="display: hidden;"></langinfo>
+    <!-- PHP -->
+        $translation = getReportTranslation("en");
+    <!-- ENDPHP -->
+<!-- ENDIF -->
+
+<!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/styles/pbtech/theme/css/bootstrap.min.css">
+<!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<div class="panel">
+    <div class="inner">
+        <!-- PHP -->
+            echo "<h2 class=\"pages-title\">" . $translation["page"]["reports"] . "</h2>";
+        <!-- ENDPHP -->
+        <br />
+
+        <div id="page-content" class="content pages-content">
+            <!-- PHP -->
+                include("ext/phpbb/pages/styles/pbtech/template/report-g/page/filters.php");
+            <!-- ENDPHP -->
+
+            <div id="div-table"></div>
+
+            <div id="div-loader" style="display: none;">
+                <img src="http://ezpz.cz/ext/phpbb/pages/styles/pbtech/theme/gears.gif" alt="Loading..." style="display: block; margin-left: auto; margin-right: auto; cursor: wait;" />
+            </div>
+        </div>
+
+        <!-- EVENT pages_after_page_content -->
+    </div>
+</div>
+<div class="modal"><!-- Place at bottom of page --></div>
+<!-- INCLUDE overall_footer.html -->
