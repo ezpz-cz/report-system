@@ -1,0 +1,12 @@
+"Phrases"
+{
+    "noplayer"
+    {
+      "cze"    "Na serveru momentálnì není žádný hráè k nahlášení."
+    }
+    
+    "error"
+    {
+      "cze"    "Vvyskytla se chyba. Zkuste to prosím znovu pozdìji."
+    }
+}

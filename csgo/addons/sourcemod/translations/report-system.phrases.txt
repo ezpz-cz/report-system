@@ -1,0 +1,12 @@
+"Phrases"
+{
+    "noplayer"
+    {
+      "en"    "Currently there is no player on the server to be reported."
+    }
+
+    "error"
+    {
+      "en"    "Some error has appeared. Please try it again later."
+    }
+}
