@@ -11,13 +11,14 @@
           var width = 1024;
           var left = parseInt((screen.availWidth/2) - (width/2));
           var top = parseInt((screen.availHeight/2) - (height/2));
-          
+
           //window.open("sutaz.html", "Title", "screenX=" + left + ",screenY=" + top + ",height=" + height + ", width=" + width + ",scrollbars=yes");
           
           var url = document.URL;
           var params = url.substr(url.indexOf('?'));
 
-          window.open("report.php" + params, "Title", "height=" + screen.height * 0.5 + ", width=" + screen.width * 0.75 + ", scrollbars=yes");
+          //window.open("report.php" + params, "Title", "height=" + screen.height + ", width=" + screen.width * 0.75 + ", scrollbars=yes");
+          window.open("report.php" + params, "Title", "width=" + screen.width * 0.75 + ", scrollbars=yes");
 
           //console.log("report.php" + params);
       };

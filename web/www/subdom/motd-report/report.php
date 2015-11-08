@@ -85,6 +85,8 @@ $pdo = getPDOConnection();
                     (reason_custom != "" ? "&reason_custom=" + encodeURIComponent(reason_custom) : "") +
                     (reason_ids.length != 0 ? "&reason_ids[]=" + reason_ids.join("&reason_ids[]=") : "");
 
+                console.log(url);
+
                 $.ajax({
                     url: url,
                     success: function(result) {
