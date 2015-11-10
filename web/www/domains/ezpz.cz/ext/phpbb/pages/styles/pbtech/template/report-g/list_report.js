@@ -391,7 +391,11 @@ $(document).ready(function () {
             $(tr).next("tr").find(".table-reports:first").DataTable({
                 "order": [[ 1, 'desc' ]],
                 "columnDefs": [ { "targets": "no-sort", "orderable": false } ],
-                "scrollX": true
+                "scrollX": true,
+                "paging":   false,
+                "ordering": false,
+                "info":     false,
+                "sDom": 'lrtip'
             });
             tr.addClass('shown');
         }

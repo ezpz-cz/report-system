@@ -53,6 +53,7 @@ $(document).ready(function(){
 
                 echo "</select>";
                 ?>
+
             </div>
             <div class="form-group">
                 <label for="select-status"><?php echo $translation["page_filters"]["status"] ?></label>
@@ -74,6 +75,16 @@ $(document).ready(function(){
                 echo "</select>";
                 ?>
             </div>
+
+            <?php
+            if ($isAdmin)
+            {
+                echo "<br />";
+                echo "<label for='input-check-my_reports'>" . $translation["page_filters"]["checkbox_my_reports"] . "</label>";
+                echo "<input id='input-check-my_reports' type='checkbox' style='margin: 0 0 4px 0;' admin_id='" . $_SESSION['ezpz_sb_admin_id'] . "' />";
+                echo "<br />";
+            }
+            ?>
             <!-- Datum od do-->
             <div class="form-group">
                 <label for="input-date-from"><?php echo $translation["page_filters"]["date_from"] ?></label>
@@ -159,9 +170,9 @@ $(document).ready(function(){
 
         <button class="btn btn-default" id="button-reset"><?php echo $translation["page_filters"]["button_reset_filter"] ?></button>
 
-        <div style="padding-left: 5px; display: inline; border-left: thick solid #000000;">
-
-        <!--<button class="btn btn-default" id="button-today"><?php echo $translation["page_filters"]["button_today"] ?></button>-->
+<!--        <div style="padding-left: 5px; display: inline; border-left: thick solid #000000;">-->
+<!---->
+<!--        <!--<button class="btn btn-default" id="button-today">--><?php //echo $translation["page_filters"]["button_today"] ?><!--</button>-->
 
             <?php
                 if ($isAdmin)
@@ -171,17 +182,6 @@ $(document).ready(function(){
             ?>
 
         </div>
-
-        <br />
-
-        <?php
-        if ($isAdmin)
-        {
-            echo "<label for='input-check-my_reports'>" . $translation["page_filters"]["checkbox_my_reports"] . "</label>";
-            echo "<input id='input-check-my_reports' type='checkbox' admin_id='" . $_SESSION['ezpz_sb_admin_id'] . "' />";
-        }
-        ?>
-
         <br />
 
         <label for="input-url"><?php echo $translation["page_filters"]["filter_url"] ?></label>
