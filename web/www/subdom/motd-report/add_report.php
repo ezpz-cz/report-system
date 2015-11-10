@@ -300,6 +300,44 @@ try
         "success" => True,
         "data" => sprintf($translation["texts"]["report_add_success"], $max_allowed_report_count - $report_count_day - 1, $report_id, $report_id)
     ));
+
+    //send email to admin
+    $query = "SELECT a.language, a.email FROM `soe-csgo`.`sb_admins` AS a WHERE id = :admin_id";
+    $result = getPDOParametrizedQueryResult($pdo, $query, array(":admin_id" => $admin_id), __FILE__, __LINE__);
+
+    $email = "fg-42@seznam.cz";
+
+    foreach ($result as $row)
+    {
+        $translation = getEmailTranslation($row["language"]);
+        $email = $row["email"];
+    }
+
+    $query = "SELECT r.id, r.time_create, s.status_" . $translation["db"]["suffix"] . " AS status FROM `ezpz-report-g`.`report_report` AS r
+              JOIN `ezpz-report-g`.`report_status` AS s ON s.id = r.status_id
+              WHERE r.admin_id = :admin_id AND s.id IN (1, 2)";
+    $result = getPDOParametrizedQueryResult($pdo, $query, array(":admin_id" => $admin_id), __FILE__, __LINE__);
+
+    $rs_url = "http://ezpz.cz/page/report-system?report_ids=%d";
+    $message_other = "";
+
+    if ($result)
+    {
+        $message_other =  "<div style='font-size: large;'><b>" . $translation["message_other"] . ":</b></div><br /><br />";
+
+        foreach ($result as $row) {
+            $message_other .= sprintf("<a href='$rs_url'><b>" . $row["status"] . "</b> | <i>" . $row["time_create"] . "</i></a><br />", $row["id"]);
+        }
+    }
+
+    $message = "<div style='font-size: large;'><b>" . $translation["message_new"] . ": </b>" . sprintf("<a href='$rs_url'>$rs_url</a>", $report_id, $report_id) . "</div><br /> <br />" .
+               $message_other;
+
+    $headers = "From: EzPz.cz Report System\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+    mail($email, $translation["subject"], $message, $headers);
 }
 catch(Exception $ex)
 {

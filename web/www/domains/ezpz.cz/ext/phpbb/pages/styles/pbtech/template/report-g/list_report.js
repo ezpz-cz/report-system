@@ -58,8 +58,10 @@ $(document).ready(function () {
                 delay: 150
             },
             position: {
-                my: 'top center',
-                at: 'bottom center',
+                //my: 'top center',
+                my: 'center left',
+                //at: 'bottom center',
+                at: 'bottom right',
                 target: $(element)
                 /*adjust: {
                  y: 10
@@ -70,6 +72,7 @@ $(document).ready(function () {
 
     function resetFields()
     {
+        $("#select-admin").prop("disabled", false);
         $("#select-admin").val($("#select-admin option:first").val());
         $("#select-status").val($("#select-status option:first").val());
         $("#input-date-from").val("");
@@ -80,6 +83,8 @@ $(document).ready(function () {
         $("#select-server").val($("#select-server option:first").val());
         $("#input-text-report_ids").val("");
         $("#input-text-reason_custom").val("");
+        $("#input-check-my_reports").attr("checked", false);
+        $("#input-text-report_ids").prop("disabled", false);
     }
 
     function getTodayDate()
@@ -657,7 +662,9 @@ $(document).ready(function () {
 
     $('#div-table').on('change', '.chb-select-all', function(e) {
         var chbAll = $(this);
-        var chbs = chbAll.closest("table").find(".chb-report");
+        //var chbs = chbAll.closest("table").find(".chb-report");
+        var chbs = chbAll.closest(".dataTables_scroll").find(".chb-report");
+        console.log(chbs);
 
         if (chbAll.prop("checked"))
         {

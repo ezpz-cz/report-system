@@ -7,7 +7,8 @@ function getReportTranslation($lang)
             "warning" => "ZNEUŽITÍ TOHOTO SYSTÉMU SE TRESTÁ BANEM!",
             "warning_send" => "Vyplň alespoň jeden důvod! Stačí i jiný důvod.",
             "report_count_exceeded" => "Pro tento den jsi vyčerpal svůj počet reportů (%d reportů)! Úspěšnými reporty se tento počet bude zvyšovat.",
-            "report_add_success" => "Report byl úspěšně odeslán! Dnes ještě můžeš poslat %d reportů. Úspěšnými reporty se tento počet bude zvyšovat. Stav reportu lze sledovat na <a href='http://ezpz.cz/page/report?report_id=%d'></a>"),
+            "report_add_success" => "Report byl úspěšně odeslán! Dnes ještě můžeš poslat %d reportů. Úspěšnými reporty se tento počet bude zvyšovat.
+                                    Stav reportu lze sledovat na <a href='http://ezpz.cz/page/report-system?report_ids=%d'>http://ezpz.cz/page/report-system?report_ids=%d</a>"),
 
         "buttons" => array(
             "send" => "Odeslat report!",
@@ -37,7 +38,7 @@ function getReportTranslation($lang)
             "warning_send" => "Fill in at least one reason! It can be only other reason.",
             "report_count_exceeded" => "You have reached your report count for today (%d reports)! Having successful reports you will be able to send more reports.",
             "report_add_success" => "Report was successfully sent! Today you can still send %d reports. Having successful reports you will be able to send more report(s).
-                                    You can look at report status at <a href='http://ezpz.cz/page/report?report_ids=%d'>http://ezpz.cz/page/report?report_ids=%d</a>"),
+                                    You can look at report status at <a href='http://ezpz.cz/page/report?report_ids=%d'>http://ezpz.cz/page/report-system?report_ids=%d</a>"),
 
         "buttons" => array(
             "send" => "Send report!",
@@ -59,6 +60,33 @@ function getReportTranslation($lang)
             "round_current" => "This round",
             "reason" => "REASON",
             "reason_custom" => "Other reason"),
+    );
+
+    return False;
+}
+
+function getEmailTranslation($lang)
+{
+    if ($lang == "cs") return array(
+        "subject" => "Nový report @ EzPz.cz",
+        "message_new" => "V report systému máš nový report",
+        "message_other" => "Nedokončené reporty",
+        "new" => "nový",
+        "in_progress" => "řeší se",
+
+        "db" => array(
+            "suffix" => "cze"),
+    );
+
+    if ($lang == "en") return array(
+        "subject" => "New reports @ EzPz.cz",
+        "message_new" => "You have new report in report-system",
+        "message_other" => "Unfinished reports",
+        "new" => "new",
+        "in_progress" => "in progress",
+
+        "db" => array(
+            "suffix" => "en"),
     );
 
     return False;

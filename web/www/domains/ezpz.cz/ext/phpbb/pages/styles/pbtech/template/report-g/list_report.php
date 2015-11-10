@@ -200,9 +200,8 @@ try
 
     $i = 0;
 
-    foreach($result_group as $row_group) {
-        //echo "session admin id:" . $_SESSION['ezpz_sb_admin_id'] . ", DB admin id: " . $row_group["admin_id"] . "<br />";
-
+    foreach($result_group as $row_group)
+    {
         $isAdmin = checkAdminForReportByAdminId($row_group["admin_id"]);
 
         if (($isAdmin || $isMainAdmin))
@@ -319,8 +318,8 @@ try
                     $row["status_id"], $row["status"],
                     $row["rep_sid"], $row["rep_ip"],
                     "http://stats.ezpz.cz/hlstats.php?mode=playerinfo&player=" . $row["rep_hlstats_id"],
-                    "http://ezpz.cz/page/utilities-chatlog?steamid=STEAM_" . $row["rep_sid"],
-                    "http://ezpz.cz/page/utilities-connectlog?steamid=STEAM_" . $row["rep_sid"],
+                    "http://ezpz.cz/page/utilities-chatlog?steamid=" . $row["rep_sid"],
+                    "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row["rep_sid"],
                     htmlspecialchars($row["rep_nick"]),
                     $row["server_id"], htmlspecialchars($row["server_name"]),
                     $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s/%s", $row["server_id"], $row["path"], $row["demo_file"]), $row["map"], $row["round"],
@@ -365,8 +364,8 @@ try
                 $row_group["ip"],
                 htmlspecialchars($row_group["nick"]),
                 "http://stats.ezpz.cz/hlstats.php?mode=playerinfo&player=" . $row_group["hlstats_id"],
-                "http://ezpz.cz/page/utilities-chatlog?steamid=STEAM_" . $row_group["sid"],
-                "http://ezpz.cz/page/utilities-connectlog?steamid=STEAM_" . $row_group["sid"],
+                "http://ezpz.cz/page/utilities-chatlog?steamid=" . $row_group["sid"],
+                "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row_group["sid"],
                 htmlspecialchars($row_group["nick"]),
                 $report_count,
                 htmlspecialchars($row_group["admin_name"]));

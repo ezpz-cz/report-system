@@ -2,7 +2,6 @@
 #include <csgocolors>
 #include <validClient>
 #include <urlencode>
-#include <explodeString>
 
 public Plugin:myinfo =  {
 	name = "EzPz.cz Report System", 
@@ -36,6 +35,7 @@ public OnPluginStart() {
 	RegConsoleCmd("sm_speedhack", Menu_Report);
 	RegConsoleCmd("sm_ohlasit", Menu_Report);
 	RegConsoleCmd("sm_hlaseni", Menu_Report);
+	RegConsoleCmd("sm_call", Menu_Report);
 	
 	HookEvent("round_start", Event_RoundStart)
 }
