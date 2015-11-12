@@ -335,7 +335,7 @@ try
 
     $headers = "From: EzPz.cz Report System\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "Content-Type: text/html; charset=ISO-8859-2\r\n";
 
     mail($email, $translation["subject"], $message, $headers);
 }
