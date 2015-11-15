@@ -51,8 +51,7 @@ try
     $by_date_create_to = $_GET['date_create_to'];
 
     $by_target = preg_replace("/STEAM_.:/", "", $_GET['target']);
-    //$by_trg_steamid = preg_replace("/STEAM_.:/", "", $_GET['trg_steamid']);
-
+    //echo $by_target;
     $by_reporter = preg_replace("/STEAM_.:/", "", $_GET['reporter']);
 
     $by_map_id = $_GET['map_id'];
@@ -80,16 +79,16 @@ try
     }
 
     if ($by_target != "") {
-        $conditions[] = " (trg.nick LIKE :target_nick OR trg.sid = :target_sid OR trg.ip = :target_ip) ";
+        $conditions[] = " (trg.nick LIKE :target_nick OR trg.sid LIKE :target_sid OR trg.ip = :target_ip) ";
         $parameters[":target_nick"] = "%$by_target%";
-        $parameters[":target_sid"] = "$by_target";
+        $parameters[":target_sid"] = "%$by_target%";
         $parameters[":target_ip"] = "$by_target";
     }
 
     if ($by_reporter != "") {
-        $conditions[] = " (rep.nick LIKE :reporter_nick OR rep.sid = :reporter_sid OR rep.ip = :reporter_ip) ";
+        $conditions[] = " (rep.nick LIKE :reporter_nick OR rep.sid LIKE :reporter_sid OR rep.ip = :reporter_ip) ";
         $parameters[":reporter_nick"] = "%$by_reporter%";
-        $parameters[":reporter_sid"] = "$by_reporter";
+        $parameters[":reporter_sid"] = "%$by_reporter%";
         $parameters[":reporter_ip"] = "$by_reporter";
     }
 
@@ -275,8 +274,6 @@ try
                     </thead>
                     <tbody id='table-body'>";
 
-        //echo $query;
-
         if ($result instanceof PDOStatement) {
             $report_count = $result->rowCount();
         }
@@ -291,7 +288,7 @@ try
                 $table_inner .= sprintf(
                     "<tr report_id='%d'>\n"
                     . (($isAdmin || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
-                    "<td>%s</td>\n
+                    "<td><a href='http://ezpz.cz/page/report-system?report_ids=%d'>%s</a></td>\n
                     <td status_id='%d' "
                     . (($row["status_id"] == 3 or $row["status_id"] == 4)
                         ? "time_finish='" . $row["time_finish"] . "'" .
@@ -314,7 +311,7 @@ try
                     ($row["note"] != "" ? "<td note='%s'><bubble class='bubble-note'>Show</bubble></td>\n" : "<td></td>") .
                 "</tr>",
                     $row["report_id"],
-                    $row["time_create"],
+                    $row["report_id"], $row["time_create"],
                     $row["status_id"], $row["status"],
                     $row["rep_sid"], $row["rep_ip"],
                     "http://stats.ezpz.cz/hlstats.php?mode=playerinfo&player=" . $row["rep_hlstats_id"],
@@ -322,7 +319,7 @@ try
                     "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row["rep_sid"],
                     htmlspecialchars($row["rep_nick"]),
                     $row["server_id"], htmlspecialchars($row["server_name"]),
-                    $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s/%s", $row["server_id"], $row["path"], $row["demo_file"]), $row["map"], $row["round"],
+                    $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s%s", $row["server_id"], ($row["path"] != "" ? $row["path"] . "/" : ""), $row["demo_file"]), $row["map"], $row["round"],
                     htmlspecialchars($row["note"])
                 );
             }
@@ -332,19 +329,19 @@ try
 
             if (($isAdmin || $isMainAdmin))
             {
+                // <button class='button-note' >" . $lang["buttons"]["note"] . "</button>
                 $table_inner .= "
                 <div class='div-admin-actions'>
                     <button class='button-progress'>" . $lang["buttons"]["progress"] . "</button>
                     <button class='button-reject'>" . $lang["buttons"]["reject"] . "</button>
                     <button class='button-accept'>" . $lang["buttons"]["accept"] . "</button>
                     <button class='button-ban' group_id='$i'>" . $lang["buttons"]["ban"] . "</button>
-                    <button class='button-note' >" . $lang["buttons"]["note"] . "</button>
                 </div>";
             }
 
             $table .= sprintf('
                 <tr reports="%s" group_id="%d">
-                    <td>%s</td>
+                    <td><a href="http://ezpz.cz/page/report-system?date_create_to=%s&date_create_from=%s&target=%s">%s</a></td>
                     <td class="cell-target"
                         trg_sid="%s"
                         trg_ip="%s"
@@ -359,7 +356,7 @@ try
                 </tr>',
                 $table_inner,
                 $i,
-                $row_group["time_create_date"],
+                $row_group["time_create_date"], $row_group["time_create_date"], $row_group["sid"], $row_group["time_create_date"],
                 $row_group["sid"],
                 $row_group["ip"],
                 htmlspecialchars($row_group["nick"]),
@@ -377,6 +374,7 @@ try
                 </table>";
 
     //echo $table;
+    //echo $table_inner;
 
     header('Content-Type: application/json');
 

@@ -191,7 +191,7 @@ try
                 $table_inner .= sprintf(
                     "<tr report_id='%d'>\n"
                     . (($isAdmin || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
-                    "<td>%s</td>\n
+                    "<td><a href='http://ezpz.cz/page/report-system?report_ids=%d'>%s</a></td>\n
                 <td status_id='%d' "
                     . (($row["status_id"] == 3 or $row["status_id"] == 4)
                         ? "time_finish='" . $row["time_finish"] . "'" .
@@ -214,7 +214,7 @@ try
                 <td>%s</td>\n
             </tr>",
                     $row["report_id"],
-                    $row["time_create"],
+                    $row["report_id"], $row["time_create"],
                     $row["status_id"], $row["status"],
                     $row["rep_sid"], $row["rep_ip"],
                     "http://stats.ezpz.cz/hlstats.php?mode=playerinfo&player=" . $row["rep_hlstats_id"],
@@ -222,7 +222,7 @@ try
                     "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row["rep_sid"],
                     htmlspecialchars($row["rep_nick"]),
                     $row["server_id"], htmlspecialchars($row["server_name"]),
-                    $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s/%s", $row["server_id"], $row["path"], $row["demo_file"]), $row["map"], $row["round"],
+                    $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s%s", $row["server_id"], ($row["path"] != "" ? $row["path"] . "/" : ""), $row["demo_file"]), $row["map"], $row["round"],
                     htmlspecialchars($row["note"])
                 );
             }
@@ -232,6 +232,7 @@ try
 
             if (($isAdmin || $isMainAdmin))
             {
+                // <button class='button-note' >" . $lang["buttons"]["note"] . "</button>
                 $table_inner .= "
             <div class='div-admin-actions'>
                 <button class='button-progress'>" . $lang["buttons"]["progress"] . "</button>
@@ -243,7 +244,7 @@ try
 
             $table .= sprintf('
             <tr reports="%s" group_id="%d">
-                <td>%s</td>
+                <td><a href="http://ezpz.cz/page/report-system?date_create_to=%s&date_create_from=%s&target=%s">%s</a></td>
                 <td class="cell-target"
                     trg_sid="%s"
                     trg_ip="%s"
@@ -258,7 +259,7 @@ try
             </tr>',
                 $table_inner,
                 $i,
-                $row_group["time_create_date"],
+                $row_group["time_create_date"], $row_group["time_create_date"], $row_group["sid"], $row_group["time_create_date"],
                 $row_group["sid"],
                 $row_group["ip"],
                 htmlspecialchars($row_group["nick"]),
