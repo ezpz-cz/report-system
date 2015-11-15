@@ -333,9 +333,9 @@ try
     $message = "<div style='font-size: large;'><b>" . $translation["message_new"] . ": </b>" . sprintf("<a href='$rs_url'>$rs_url</a>", $report_id, $report_id) . "</div><br /> <br />" .
                $message_other;
 
-    $headers = "From: EzPz.cz Report System\r\n";
+    $headers = "From: admin@ezpz.cz\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=ISO-8859-2\r\n";
+    $headers .= "Content-Type: text/html; charset=cp1250\r\n";
 
     mail($email, $translation["subject"], $message, $headers);
 }
