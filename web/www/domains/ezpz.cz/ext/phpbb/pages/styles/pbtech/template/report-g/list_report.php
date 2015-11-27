@@ -44,7 +44,7 @@ try
 
     $pdo = getPDOConnection();
 
-    $by_report_status_id = $_GET['report_status_id'];
+    $by_report_status_ids = $_GET['report_status_ids'];
     $by_reason_id = $_GET['reason_id'];
     $by_reason_custom = $_GET['reason_custom'];
     $by_date_create_from = $_GET['date_create_from'];
@@ -66,7 +66,8 @@ try
         $parameters[":server_id"] = intval($server["server_id"]);
     }
 
-    if ($by_report_status_id != "") {
+    /*if (!empty($by_report_status_ids))
+    {
         if (($by_report_status_id == "3" or $by_report_status_id == "4"))
         {
             $conditions[] = " (r.status_id = 3 or r.status_id = 4) ";
@@ -76,6 +77,30 @@ try
             $conditions[] = "r.status_id = :status_id";
             $parameters[":status_id"] = intval($by_report_status_id);
         }
+    }*/
+
+    $where_status_ids = " (";
+    $id_count = count($by_report_status_ids);
+
+    if ($id_count > 1)
+    {
+        $i = 0;
+        foreach ($by_report_status_ids as $id)
+        {
+            if ($i < $id_count - 1) $where_status_ids .= " r.status_id = :status_id$i OR ";
+            else $where_status_ids .= " r.status_id = :status_id$i ";
+
+            $parameters[":status_id$i"] = $id;
+            $i++;
+        }
+        $where_status_ids .= ") ";
+        $conditions[] = $where_status_ids;
+    }
+
+    if ($id_count == 1 and $by_report_status_ids[0] != "")
+    {
+        $conditions[] = "r.status_id = :status_id";
+        $parameters[":status_id"] = $by_report_status_ids[0];
     }
 
     if ($by_target != "") {
@@ -116,8 +141,6 @@ try
         //$where = " WHERE " . implode(' AND ', $conditions);
         $where = " AND " . $conditions[0];
     }
-
-    //echo "$where";
 
     $where_group = "";
 
@@ -290,11 +313,11 @@ try
                     . (($isAdmin || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
                     "<td><a href='http://ezpz.cz/page/report-system?report_ids=%d'>%s</a></td>\n
                     <td status_id='%d' "
-                    . (($row["status_id"] == 3 or $row["status_id"] == 4)
-                        ? "time_finish='" . $row["time_finish"] . "'" .
+                    . (($row["status_id"] == 3 or $row["status_id"] == 4 or $row["status_id"] == 5)
+                        ? "time_finish='" . $row["time_finish"] . "' " .
                         (!is_null($row["sourcebans_link"]) ?
                             "sourcebans_link='" . $row["sourcebans_link"] . "'"
-                            : "") . "><bubble class='bubble-status'>%s</bubble>"
+                            : "sourcebans_link=''") . "><bubble class='bubble-status'>%s</bubble>"
                         : ">%s") . "
                     </td>\n
                     <td class='cell-reporter'

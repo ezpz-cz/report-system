@@ -1,9 +1,53 @@
 var table;
 var lang;
 var banSuccess = {"success": false, "ban_id": -1};
+var args = getJsonFromUrl();
+var translation;
 
-$(document).ready(function () {
+$(document).ready(function ()
+{
+    function getTranslation(lang)
+    {
+        if (lang == "cze")
+        {
+            return {
+                "alerts": {
+                    "no_report": "Nemáš zaškrtnuté žádné reporty!",
+                    "progress": "Opravdu chceš označit hotový report jako 'řeší se'?"
+                },
+                "status": {
+                    "progress": "řeší se",
+                    "rejected": "hotové – zamítnuto",
+                    "accept_ban": "hotové – přijato, ban",
+                    "accept": "hotové – přijato"
+                },
+                "bubble": {
+                    "finished": "Hotovo"
+                }
+            }
+        }
+        else
+        {
+            return {
+                "alerts": {
+                    "no_report": "You don't have any checked reports!",
+                    "progress": "Do you really want to set finished report as 'in progress'?"
+                },
+                "status": {
+                    "progress": "in progress",
+                    "rejected": "finished – rejected",
+                    "accept_ban": "finished – accepted, banned",
+                    "accept": "finished – accepted"
+                },
+                "bubble": {
+                    "finished": "Finished"
+                }
+            }
+        }
+    }
+
     lang = $("langinfo").attr("value");
+    translation = getTranslation(lang);
 
     function loadTable(url)
     {
@@ -29,6 +73,8 @@ $(document).ready(function () {
                         "order": [[ 0, 'desc' ]],
                         "scrollX": true
                     });
+
+                    //$('#table-reports-group thead').remove();
                 }
 
                 //$("#div-loader").slideUp(function() {
@@ -96,16 +142,22 @@ $(document).ready(function () {
 
     function showUrl()
     {
-        var url = "http://ezpz.cz/domains/ezpz.cz/page/report?";
+        var url = "http://ezpz.cz/page/report-system?";
 
         if ($("#select-admin").val() != "-")
         {
             url += "admin=" + encodeURIComponent($("#select-admin").val()) + "&";
         }
 
-        if ($("#select-status").val() != "-")
+        var reports_status_ids = $("#select-status").find(":selected");
+        if ($(reports_status_ids[0]).attr("status_id") != "-1" && reports_status_ids.length)
         {
-            url += "status=" + encodeURIComponent($("#select-status").val()) + "&";
+            var ids = [];
+            for (var i = 0; i < reports_status_ids.length; ++i)
+            {
+                ids.push($(reports_status_ids[i]).attr("status_id"));
+            }
+            url += "&status_ids=" + ids.join(",");
         }
 
         if ($("#input-date-from").val() != "")
@@ -153,10 +205,8 @@ $(document).ready(function () {
 
     function parseUrl()
     {
-        var args = getJsonFromUrl();
-
         var admin = args["admin"];
-        var status = args["status"];
+        var status = args["status_ids"];
         var date_from = args["date_from"];
         var date_to = args["date_to"];
         var reason = args["reason"];
@@ -169,12 +219,15 @@ $(document).ready(function () {
         if (typeof admin !== 'undefined')
         {
             $("#select-admin").val(admin);
-
         }
 
         if (typeof status !== 'undefined')
         {
-            $("#select-status").val(status);
+            var status_ids = status.split(",");
+            for (var i = 0; i < status_ids.length; ++i)
+            {
+                $("#select-status option[status_id='" + status_ids[i] + "']").attr("selected", "selected");
+            }
         }
 
         if (typeof date_from !== 'undefined')
@@ -220,12 +273,30 @@ $(document).ready(function () {
 
     $("#button-search").click(function(e)
     {
+        var url;
+
+        var reports_status_ids_url = "";
+        var reports_status_ids = $("#select-status").find(":selected");
+        if ($(reports_status_ids[0]).attr("status_id") != "-1" && reports_status_ids.length)
+        {
+            for (var i = 0; i < reports_status_ids.length; ++i)
+            {
+                reports_status_ids_url += "&report_status_ids[]=" + $(reports_status_ids[i]).attr("status_id");
+            }
+        }
+
+        if ($(reports_status_ids[0]).attr("status_id") == "-1" || !reports_status_ids.length)
+        {
+            reports_status_ids_url = "&report_status_ids[]=";
+        }
+
         if ($("#input-check-my_reports").prop("checked"))
         {
-            var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report.php?" +
+            url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report.php?" +
                 "lang=" + lang +
                 "&serverid=" + encodeURIComponent($("#select-server").find(":selected").attr("serverid")) +
-                "&report_status_id=" + encodeURIComponent($("#select-status").find(":selected").attr("status_id")) +
+                //"&report_status_id=" + encodeURIComponent($("#select-status").find(":selected").attr("status_id")) +
+                reports_status_ids_url +
                 "&reason_id=" + encodeURIComponent($("#select-reason").find(":selected").attr("reason_id")) +
                 "&reason_custom=" + encodeURIComponent($("#input-text-reason_custom").val()) +
                 "&date_create_from=" + encodeURIComponent($("#input-date-from").val()) +
@@ -253,14 +324,13 @@ $(document).ready(function () {
 
             report_ids = $.unique(report_ids);
 
-            //console.log(report_ids);
-
             if (report_ids.length == 0)
             {
-                var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report.php?" +
+                url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report.php?" +
                     "lang=" + lang +
                     "&serverid=" + encodeURIComponent($("#select-server").find(":selected").attr("serverid")) +
-                    "&report_status_id=" + encodeURIComponent($("#select-status").find(":selected").attr("status_id")) +
+                    //"&report_status_id=" + encodeURIComponent($("#select-status").find(":selected").attr("status_id")) +
+                    reports_status_ids_url +
                     "&reason_id=" + encodeURIComponent($("#select-reason").find(":selected").attr("reason_id")) +
                     "&reason_custom=" + encodeURIComponent($("#input-text-reason_custom").val()) +
                     "&date_create_from=" + encodeURIComponent($("#input-date-from").val()) +
@@ -272,7 +342,7 @@ $(document).ready(function () {
             }
             else
             {
-                var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report_byReportIds.php?" +
+                url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report_byReportIds.php?" +
                     "lang=" + lang +
                         //"&report_ids=[" + report_ids.join(",") + "]
                     "&report_ids[]=" + report_ids.join("&report_ids[]=");
@@ -286,25 +356,6 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    /*$("#button-today").click(function(e)
-    {
-        var today_date = getTodayDate();
-
-        var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/list_report.php?" +
-            "lang=" + lang +
-            "&serverid=-1" + encodeURIComponent($("#select-server").find(":selected").attr("serverid")) +
-            "&date_create_from=" + encodeURIComponent(today_date) +
-            "&date_create_to=" + encodeURIComponent(today_date);
-
-        console.log(url);
-
-        $("#button-reset").trigger("click");
-
-        loadTable(url);
-        //loadTable(url);
-        e.preventDefault();
-    });*/
-
     $("#button-my-today").click(function(e)
     {
         var today_date = getTodayDate();
@@ -316,7 +367,7 @@ $(document).ready(function () {
             "&date_create_from=" + encodeURIComponent(today_date) +
             "&date_create_to=" + encodeURIComponent(today_date);
 
-        console.log(url);
+        //console.log(url);
 
         $("#button-reset").trigger("click");
 
@@ -405,7 +456,16 @@ $(document).ready(function () {
     {
         var button = $(this);
 
-        $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent().each(function() {
+        var reports = $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent();
+
+        if (!reports.length)
+        {
+            alert(translation["alerts"]["no_report"]);
+            return;
+        }
+
+        reports.each(function()
+        {
             var report = $(this);
 
             var status = report.find("td[status_id]");
@@ -417,7 +477,7 @@ $(document).ready(function () {
 
             if ((status.attr("status_id") == "3" || status.attr("status_id") == "4"))
             {
-                if (!confirm((lang == "cze" ? "Opravdu chceš označit hotový report jako 'řeší se'?" : "Do you really want to set finished report as 'in progress'?")))
+                if (!confirm(translation["alerts"]["progress"]))
                 {
                     return;
                 }
@@ -436,7 +496,7 @@ $(document).ready(function () {
                         {
                             status.attr("status_id", "2");
                             status.fadeOut(function() {
-                                status.text((lang == "cze" ? "řeší se" : "in progress")).fadeIn();
+                                status.text(translation["status"]["progress"]).fadeIn();
                             });
                         }
                     }
@@ -448,7 +508,16 @@ $(document).ready(function () {
     {
         var button = $(this);
 
-        $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent().each(function() {
+        var reports = $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent();
+
+        if (!reports.length)
+        {
+            alert(translation["alerts"]["no_report"]);
+            return;
+        }
+
+        reports.each(function()
+        {
             var report = $(this);
 
             var status = report.find("td[status_id]");
@@ -468,7 +537,7 @@ $(document).ready(function () {
                             {
                                 status.attr("status_id", "4");
                                 status.fadeOut(function() {
-                                    status.text((lang == "cze" ? "hotové – zamítnuto" : "finished – rejected")).fadeIn();
+                                    status.text(translation["status"]["rejected"]).fadeIn();
                                 });
                             }
                         }
@@ -477,65 +546,44 @@ $(document).ready(function () {
         });
     });
 
-    function setReportAccepted (report_id, status)
-    {
-        $.ajax(
-            {
-                type: "POST",
-                url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/r_setAccept.php",
-                data: {
-                    "report_id": report_id
-                },
-                success: function(response)
-                {
-                    if (response.success)
-                    {
-                        status.attr("status_id", "3");
-                        status.fadeOut(function() {
-                            status.text((lang == "cze" ? "hotové – přijato" : "finished – accepted")).fadeIn();
-                        });
-                    }
-                }
-            });
-    }
-
-    function setReportAcceptedBan (report_id, ban_id, status)
-    {
-        $.ajax(
-            {
-                type: "POST",
-                url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/r_setAccept.php",
-                data: {
-                    "report_id": report_id,
-                    "ban_id": ban_id
-                },
-                success: function(response)
-                {
-                    if (response.success)
-                    {
-                        status.attr("status_id", "4");
-                        status.fadeOut(function () {
-                            status.html((lang == "cze" ?
-                            "<b><a target='_blank' href='http://sourcebans.ezpz.cz/#" + ban_id + "'>hotové – přijato, ban</a></b>" :
-                            "<b><a target='_blank' href='http://sourcebans.ezpz.cz/#" + ban_id + "'>finished – accepted, banned</a></b>")).fadeIn();
-                        });
-                    }
-                }
-            });
-    }
-
     $('#div-table').on('click', '.button-accept', function ()
     {
         var button = $(this);
 
-        $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent().each(function() {
+        var reports = $(button).parent().prev().find(".table-reports").find(".chb-report:checked").parent().parent();
+
+        if (!reports.length)
+        {
+            alert(translation["alerts"]["no_report"]);
+            return;
+        }
+
+        reports.each(function()
+        {
             var report = $(this);
 
             var status = report.find("td[status_id]");
 
             if (status.attr("status_id") != "3")
             {
-                setReportAccepted(report.attr("report_id"), status);
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/r_setAccept.php",
+                        data: {
+                            "report_id": report.attr("report_id")
+                        },
+                        success: function(response)
+                        {
+                            if (response.success)
+                            {
+                                status.attr("status_id", "3");
+                                status.fadeOut(function() {
+                                    status.text(translation["status"]["accept"]).fadeIn();
+                                });
+                            }
+                        }
+                    });
             }
         });
     });
@@ -548,15 +596,23 @@ $(document).ready(function () {
 
         if (!reports.length)
         {
+            alert(translation["alerts"]["no_report"]);
             return;
         }
+
+        var report_ids = [];
+
+        reports.each(function() {
+            report_ids.push($(this).attr("report_id"));
+        });
 
         var ban_info = button.closest("#table-reports-group").find("tr[group_id=" + button.attr("group_id") + "]").find("td.cell-target");
 
         button.attr("href", "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/addban_report.html?" +
                             "nickname=" + encodeURIComponent(ban_info.attr("trg_nick")) +
                             "&steamid=" + encodeURIComponent(ban_info.attr("trg_sid")) +
-                            "&ip=" + encodeURIComponent(ban_info.attr("trg_ip")));
+                            "&ip=" + encodeURIComponent(ban_info.attr("trg_ip")) +
+                            "&report_ids=" + report_ids.join(","));
 
         $(".button-ban").fancybox(
             {
@@ -578,7 +634,25 @@ $(document).ready(function () {
                         reports.each(function () {
                             var report = $(this);
                             var status = report.find("td[status_id]");
-                            setReportAcceptedBan(report.attr("report_id"), banSuccess["ban_id"], status);
+                            $.ajax(
+                                {
+                                    type: "POST",
+                                    url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/r_setAccept.php",
+                                    data: {
+                                        "report_id": report.attr("report_id"),
+                                        "ban_id": banSuccess["ban_id"]
+                                    },
+                                    success: function(response)
+                                    {
+                                        if (response.success)
+                                        {
+                                            status.attr("status_id", "4");
+                                            status.fadeOut(function () {
+                                                status.html("<b><a target='_blank' href='http://sourcebans.ezpz.cz/#" + banSuccess["ban_id"] + "'>" + translation["status"]["accept_ban"] + "</a></b>").fadeIn();
+                                            });
+                                        }
+                                    }
+                                });
                         });
                     }
                 }
@@ -647,7 +721,7 @@ $(document).ready(function () {
         var that = $(this);
         var this_parent = $(that).parent();
 
-        var content = $.parseHTML(($("langinfo").attr("value") == "cze" ? "<b>Dokončeno: </b>" : "<b>Finished: </b>") + $(this_parent).attr('time_finish') + "<br />" +
+        var content = $.parseHTML(translation["bubble"]["finished"] + ": " + $(this_parent).attr('time_finish') + "<br />" +
         ($(this_parent).attr('sourcebans_link') != "" ? "<b><a target='_blank' href='" + $(this_parent).attr('sourcebans_link') + "'>SourceBans</a></b>" : ""));
 
         //($(this_parent).attr('status_id') == "3" &&
@@ -664,11 +738,10 @@ $(document).ready(function () {
         showBubble(that, content);
     });
 
-    $('#div-table').on('change', '.chb-select-all', function(e) {
+    $('#div-table').on('change', '.chb-select-all', function() {
         var chbAll = $(this);
         //var chbs = chbAll.closest("table").find(".chb-report");
         var chbs = chbAll.closest(".dataTables_scroll").find(".chb-report");
-        console.log(chbs);
 
         if (chbAll.prop("checked"))
         {
@@ -690,7 +763,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#div-table').on('click', '.a-select-all', function(e) {
+    $('#div-table').on('click', '.a-select-all', function() {
         var a = $(this);
         var chbAll = a.prev("input.chb-select-all");
         var chbs = chbAll.closest(".dataTables_scroll").find(".chb-report");
@@ -799,9 +872,23 @@ $(document).ready(function () {
         $('#input-date-to').datepicker(datepicker_to_options);
     }
 
-    parseUrl();
-    $("#button-search").trigger("click");
+    if (args["report_ids"] === "undefined")
+    {
+        var admin_info = $("admininfo");
 
-    //loadTable();
-    //loadTable();
+        if (admin_info.attr("admin") == "true") {
+            $("#select-status option[status_id='1']").prop('selected', true);
+            $("#select-admin option[admin_id='" + admin_info.attr("admin_id") + "'").prop('selected', true);
+        }
+    }
+
+    if (args["status_ids"] === "undefined")
+    {
+        console.log("AAA");
+        $("#select-status option[status_id='-1']").attr("selected", "selected");
+    }
+
+    parseUrl();
+    $("#select-status").dropdownchecklist({width: 500, firstItemChecksAll: true});
+    $("#button-search").trigger("click");
 });

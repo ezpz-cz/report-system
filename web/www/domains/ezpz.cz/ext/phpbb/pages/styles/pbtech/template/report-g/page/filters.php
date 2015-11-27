@@ -63,8 +63,9 @@ $(document).ready(function(){
                 $query = "SELECT id, status_" . $translation["db"]["suffix"] . " FROM `ezpz-report-g`.report_status";
                 $result = getPDOQueryResult($pdo, $query, __FILE__, __LINE__);
 
-                echo "<select class=\"form-control\" id='select-status'>";
-                echo "<option status_id=''>-</option>";
+                echo "<select class='form-control' id='select-status' multiple='multiple'>";
+                //echo "<select class='form-control' id='select-status'>";
+                echo "<option status_id='-1'>" . $translation["page_filters"]["all"] . "</option>";
 
                 foreach ($result as $row)
                 {
