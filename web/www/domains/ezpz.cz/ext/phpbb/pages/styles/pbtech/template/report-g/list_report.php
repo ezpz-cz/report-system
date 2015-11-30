@@ -122,12 +122,21 @@ try
         $parameters[":map_id"] = $by_map_id;
     }
 
-    if ($by_reason_id != "") {
+    if ($by_reason_id != "" and $by_reason_custom != "")
+    {
+        $conditions[] = " (rs.id = :reason_id OR r.reason_custom LIKE :reason_custom) ";
+        $parameters[":reason_id"] = intval($by_reason_id);
+        $parameters[":reason_custom"] = "%$by_reason_custom%";
+    }
+
+    if ($by_reason_id != "" and $by_reason_custom == "")
+    {
         $conditions[] = "rs.id = :reason_id";
         $parameters[":reason_id"] = intval($by_reason_id);
     }
 
-    if ($by_reason_custom != "") {
+    if ($by_reason_id == "" and $by_reason_custom != "")
+    {
         $conditions[] = "r.reason_custom LIKE :reason_custom";
         $parameters[":reason_custom"] = "%$by_reason_custom%";
     }
