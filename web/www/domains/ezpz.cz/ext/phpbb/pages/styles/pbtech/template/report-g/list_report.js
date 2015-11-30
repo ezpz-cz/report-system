@@ -172,7 +172,7 @@ $(document).ready(function ()
 
         if ($("#select-reason").val() != "-")
         {
-            url += "reason=" + encodeURIComponent($("#select-reason").val()) + "&";
+            url += "reason_id=" + encodeURIComponent($("#select-reason").find(":selected").attr("reason_id")) + "&";
         }
 
         if ($("#input-text-target").val() != "")
@@ -209,7 +209,7 @@ $(document).ready(function ()
         var status = args["status_ids"];
         var date_from = args["date_from"];
         var date_to = args["date_to"];
-        var reason = args["reason"];
+        var reason_id = args["reason_id"];
         var target = args["target"];
         var reporter = args["reporter"];
         var server = args["server"];
@@ -240,9 +240,10 @@ $(document).ready(function ()
             $("#input-date-to").val(date_to);
         }
 
-        if (typeof reason !== 'undefined')
+        if (typeof reason_id !== 'undefined')
         {
-            $("#select-reason").val(reason);
+            //$("#select-reason").val(reason);
+            $("#select-reason option[reason_id='" + reason_id + "']").attr("selected", "selected");
         }
 
         if (typeof target !== 'undefined')
