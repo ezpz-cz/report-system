@@ -157,7 +157,7 @@ $(document).ready(function ()
             {
                 ids.push($(reports_status_ids[i]).attr("status_id"));
             }
-            url += "&status_ids=" + ids.join(",");
+            url += "&status_ids=" + ids.join(",") + "&";
         }
 
         if ($("#input-date-from").val() != "")
@@ -884,7 +884,6 @@ $(document).ready(function ()
 
     if (args["status_ids"] === "undefined")
     {
-        console.log("AAA");
         $("#select-status option[status_id='-1']").attr("selected", "selected");
     }
 
