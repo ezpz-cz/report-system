@@ -22,6 +22,7 @@
 <!-- INCLUDECSS @phpbb_pages/../theme/datetimepicker/jquery.datetimepicker.css -->
 <!-- INCLUDECSS @phpbb_pages/../theme/fancybox/jquery.fancybox.css -->
 <!-- INCLUDECSS @phpbb_pages/../theme/qtip2/jquery.qtip.css -->
+<!-- INCLUDECSS @phpbb_pages/../theme/dropdown-checklist/ui.dropdownchecklist.standalone.css -->
 
 <!-- INCLUDE overall_header.html -->
 <!-- INCLUDEJS scripts-generic/jquery/jquery-1.11.2.min.js -->
@@ -32,6 +33,7 @@
 <!-- INCLUDEJS scripts-generic/fancybox/jquery.fancybox.pack.js -->
 <!-- INCLUDEJS scripts-generic/jquery.mousewheel-3.0.6.pack.js -->
 <!-- INCLUDEJS scripts-generic/qtip2/jquery.qtip.min.js -->
+<!-- INCLUDEJS scripts-generic/dropdown-checklist/ui.dropdownchecklist-1.5-min.js -->
 
 <!-- INCLUDEJS scripts-generic/getJsonFromUrl.js -->
 <!-- INCLUDEJS report-g/list_report.js -->
@@ -86,6 +88,17 @@
         $_SESSION['ezpz_sb_admin'] = "0";
     <!-- ENDPHP -->
 <!-- ENDIF -->
+
+<!-- PHP -->
+    if ($isAdmin)
+    {
+        echo '<admininfo admin="true" admin_id="' . $_SESSION['ezpz_sb_admin_id'] . '" style="display: hidden;"></admininfo>';
+    }
+    else
+    {
+        echo '<admininfo admin="false" admin_id="" style="display: hidden;"></admininfo>';
+    }
+<!-- ENDPHP -->
 
 <!-- IF S_USER_LANG eq 'cs-cz' -->
     <langinfo class="lang" value="cze" style="display: hidden;"></langinfo>

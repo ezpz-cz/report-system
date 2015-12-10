@@ -181,19 +181,19 @@ try
     // if true, use the same admin id for this report
     // if false, assign new admin id
     $query = "SELECT admin_id FROM `ezpz-report-g`.report_report AS r JOIN `ezpz-report-g`.report_players AS p ON p.id = r.target_id
-              WHERE DATE(r.time_create) = :time_create AND p.sid = :sid";
-    $parameters = array(":time_create" => date("Y-m-d"), ":sid" => $_GET["trg_sid"]);
-
-    //print_r($parameters);
-    //echo $query;
+              WHERE DATE(r.time_create) = :time_create AND p.sid LIKE :sid";
+    $parameters = array(":time_create" => date("Y-m-d"), ":sid" => "%" . $_GET["trg_sid"]);
 
     $result = getPDOParametrizedQueryResult($pdo, $query, $parameters, __FILE__, __LINE__);
+
+    //print_r($result);
 
     if (count($result) == 0)
     {
         // find suitable admin for this report (his id)
         // first find admins with lowest number of finished reports
         $admins = getAdminsReports();
+        //print_r($admins);
         $i = 0;
         $min = 0;
         $lastKey = 0;
@@ -221,7 +221,7 @@ try
             $lastKey = $key;
             $i++;
         }
-
+        //print_r($admins);
         // find admins with lowest number of new reports
         $i = 0;
         $min = 0;
@@ -259,49 +259,46 @@ try
         $admin_id = $result[0]["admin_id"];
     }
 
-    $query = "INSERT INTO
-                `ezpz-report-g`.report_report(`server_id`, `reporter_id`, `target_id`, `admin_id`, `status_id`, `map_id`, `demo_file`"
-        . (isset($_GET["round"]) ? ", `round`" : "")
-        . (isset($_GET["reason_custom"]) ? ", `reason_custom`) " : ") ") . "
-              VALUES
-                (:server_id, :reporter_id, :target_id, :admin_id, 1, :map_id, :demo_file"
-        . (isset($_GET["round"]) ? ", :round" : " ")
-        . (isset($_GET["reason_custom"]) ? ", :reason_custom)" : ")");
-
-    $parameters = array(":server_id" => intval($_GET["server_id"]), ":reporter_id" => intval($reporter_id), ":target_id" => intval($target_id),
-                        ":admin_id" => intval($admin_id), ":map_id" => intval($map_id), ":demo_file" => $_GET["demo_file"]);
-
-    if (isset($_GET["round"]))
-    {
-        $parameters[":round"] = $_GET["round"];
-    }
-
-    if (isset($_GET["reason_custom"]))
-    {
-        $parameters[":reason_custom"] = $_GET["reason_custom"];
-    }
-
-    PDOExecParametrizedQuery($pdo, $query, $parameters, __FILE__, __LINE__);
-
-    $report_id = $pdo->lastInsertId();
-
-    if (isset($_GET["reason_ids"]))
-    {
-        foreach ($_GET["reason_ids"] as $reason_id)
-        {
-            $query = "INSERT INTO `ezpz-report-g`.report_report_reason(report_id, reason_id) VALUES (:report_id, :reason_id)";
-            $parameters = array(":report_id" => $report_id, ":reason_id" => $reason_id);
-            PDOExecParametrizedQuery($pdo, $query, $parameters, __FILE__, __LINE__);
-        }
-    }
-
-    echo json_encode(array(
-        "success" => True,
-        "data" => sprintf($translation["texts"]["report_add_success"], $max_allowed_report_count - $report_count_day - 1, $report_id, $report_id)
-    ));
-
     if (!isset($_GET["test"]))
     {
+        $query = "INSERT INTO
+                `ezpz-report-g`.report_report(`server_id`, `reporter_id`, `target_id`, `admin_id`, `status_id`, `map_id`, `demo_file`"
+            . (isset($_GET["round"]) ? ", `round`" : "")
+            . (isset($_GET["reason_custom"]) ? ", `reason_custom`) " : ") ") . "
+              VALUES
+                (:server_id, :reporter_id, :target_id, :admin_id, 1, :map_id, :demo_file"
+            . (isset($_GET["round"]) ? ", :round" : " ")
+            . (isset($_GET["reason_custom"]) ? ", :reason_custom)" : ")");
+
+        $parameters = array(":server_id" => intval($_GET["server_id"]), ":reporter_id" => intval($reporter_id), ":target_id" => intval($target_id),
+            ":admin_id" => intval($admin_id), ":map_id" => intval($map_id), ":demo_file" => $_GET["demo_file"]);
+
+        if (isset($_GET["round"])) {
+            $parameters[":round"] = $_GET["round"];
+        }
+
+        if (isset($_GET["reason_custom"])) {
+            $parameters[":reason_custom"] = $_GET["reason_custom"];
+        }
+
+        PDOExecParametrizedQuery($pdo, $query, $parameters, __FILE__, __LINE__);
+
+        $report_id = $pdo->lastInsertId();
+
+        if (isset($_GET["reason_ids"])) {
+            foreach ($_GET["reason_ids"] as $reason_id) {
+                $query = "INSERT INTO `ezpz-report-g`.report_report_reason(report_id, reason_id) VALUES (:report_id, :reason_id)";
+                $parameters = array(":report_id" => $report_id, ":reason_id" => $reason_id);
+                PDOExecParametrizedQuery($pdo, $query, $parameters, __FILE__, __LINE__);
+            }
+        }
+
+        echo json_encode(array(
+            "success" => True,
+            "data" => sprintf($translation["texts"]["report_add_success"], $max_allowed_report_count - $report_count_day - 1, $report_id, $report_id)
+        ));
+
+
         //send email to admin
         $query = "SELECT a.language, a.email FROM `soe-csgo`.`sb_admins` AS a WHERE id = :admin_id";
         $result = getPDOParametrizedQueryResult($pdo, $query, array(":admin_id" => $admin_id), __FILE__, __LINE__);
@@ -335,6 +332,11 @@ try
         $headers .= "Content-Type: text/html; charset=cp1250\r\n";
 
         mail($email, $translation["subject"], $message, $headers);
+    }
+    else
+    {
+        print_r($admins);
+        echo $admin_id;
     }
 }
 catch(Exception $ex)

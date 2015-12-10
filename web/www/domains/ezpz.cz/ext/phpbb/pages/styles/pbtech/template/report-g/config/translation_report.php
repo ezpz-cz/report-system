@@ -23,7 +23,8 @@ function getReportTranslation($lang)
             "reject" => "Zamítnout",
             "accept" => "Přijmout",
             "ban" => "Přijmout a banovat",
-            "note" => "Změnit poznámku"),
+            "note" => "Změnit poznámku",
+            "take_over" => "Převzít tyto reporty"),
 
         "db" => array(
             "suffix" => "cze"),
@@ -56,7 +57,8 @@ function getReportTranslation($lang)
             "checkbox_today" => "Dnešek",
             "button_reset_filter" => "Resetovat filtr",
             "button_today" => "Dnešek",
-            "filter_url" => "Link na tento filtr")
+            "filter_url" => "Link na tento filtr",
+            "all" => "všechny")
     );
 
     if ($lang == "en") return array(
@@ -80,7 +82,8 @@ function getReportTranslation($lang)
             "reject" => "Reject",
             "accept" => "Accept",
             "ban" => "Accept and ban",
-            "note" => "Change note"),
+            "note" => "Change note",
+            "take_over" => "Take over these reports"),
 
         "db" => array(
             "suffix" => "en"),
@@ -113,7 +116,8 @@ function getReportTranslation($lang)
             "checkbox_today" => "Today",
             "button_reset_filter" => "Reset filter",
             "button_today" => "Today",
-            "filter_url" => "Link for this filter")
+            "filter_url" => "Link for this filter",
+            "all" => "all")
     );
 
     return False;

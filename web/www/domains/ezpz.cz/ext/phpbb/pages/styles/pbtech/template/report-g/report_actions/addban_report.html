@@ -15,11 +15,13 @@
                 $("#input-steamid").val(args["steamid"]);
                 $("#input-ip").val(args["ip"]);
 
-                $('#input-length').on('input', function() {
+                $('#input-length').on('input', function()
+                {
                     $("#div-time").text(timeToString(parseInt($(this).val())));
                 });
 
-                $('body').on('click', '#button-submit', function () {
+                $('body').on('click', '#button-submit', function ()
+                {
                     /*console.log($("#input-nickname").val());
                     console.log($("#input-steamid").val());
                     console.log($("#input-ip").val());
@@ -55,7 +57,8 @@
                             "steamid": $("#input-steamid").val(),
                             "ip": $("#input-ip").val(),
                             "length": $("#input-length").val(),
-                            "reason": $("#txt-reason").val()
+                            "reason": $("#txt-reason").val(),
+                            "report_ids": args["report_ids"]
                         },
                         success: function(response)
                         {

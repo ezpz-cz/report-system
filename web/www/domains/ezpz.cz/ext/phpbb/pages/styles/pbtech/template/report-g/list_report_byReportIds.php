@@ -8,20 +8,6 @@ if (!isset($_GET["report_ids"]))
 
 session_start();
 
-/*if ($_SESSION['ezpz_report_permission'] == "1")
-{
-    $isMainAdmin = True;
-}
-else
-{
-    $isMainAdmin = False;
-}
-
-if ($_SESSION['ezpz_report_permission'] == "2")
-{
-    $isAdmin = True;
-}*/
-
 try
 {
     include_once(dirname(__FILE__)."/../scripts-generic/servers.php");
@@ -110,9 +96,9 @@ try
     {
         //echo "session admin id:" . $_SESSION['ezpz_sb_admin_id'] . ", DB admin id: " . $row_group["admin_id"] . "<br />";
 
-        $isAdmin = checkAdminForReportByAdminId($row_group["admin_id"]);
+        $isAdminForReport = checkAdminForReportByAdminId($row_group["admin_id"]);
 
-        if (($isAdmin || $isMainAdmin))
+        if (($isAdminForReport || $isMainAdmin))
         {
             $tableHeader_inner = "<th class='no-sort'><input type='checkbox' class='chb-select-all'/><a class='a-select-all'>" . $lang["table_headers"]["all"] . "</a></th>" . $tableHeader_inner_original;
         }
@@ -190,14 +176,14 @@ try
             {
                 $table_inner .= sprintf(
                     "<tr report_id='%d'>\n"
-                    . (($isAdmin || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
+                    . (($isAdminForReport || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
                     "<td><a href='http://ezpz.cz/page/report-system?report_ids=%d'>%s</a></td>\n
                 <td status_id='%d' "
-                    . (($row["status_id"] == 3 or $row["status_id"] == 4)
-                        ? "time_finish='" . $row["time_finish"] . "'" .
+                    . (($row["status_id"] == 3 or $row["status_id"] == 4 or $row["status_id"] == 5)
+                        ? "time_finish='" . $row["time_finish"] . "' " .
                         (!is_null($row["sourcebans_link"]) ?
                             "sourcebans_link='" . $row["sourcebans_link"] . "'"
-                            : "") . "><bubble class='bubble-status'>%s</bubble>"
+                            : "sourcebans_link=''") . "><bubble class='bubble-status'>%s</bubble>"
                         : ">%s") . "
                 </td>\n
                 <td class='cell-reporter'
@@ -230,7 +216,7 @@ try
 
             //echo $table_inner . "<br /><br />";
 
-            if (($isAdmin || $isMainAdmin))
+            if (($isAdminForReport || $isMainAdmin))
             {
                 // <button class='button-note' >" . $lang["buttons"]["note"] . "</button>
                 $table_inner .= "

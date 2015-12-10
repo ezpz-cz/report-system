@@ -8,20 +8,6 @@ if (!isset($_GET["lang"]))
 
 session_start();
 
-/*if ($_SESSION['ezpz_report_permission'] == "1")
-{
-    $isMainAdmin = True;
-}
-else
-{
-    $isMainAdmin = False;
-}
-
-if ($_SESSION['ezpz_report_permission'] == "2")
-{
-    $isAdmin = True;
-}*/
-
 try
 {
     include_once(dirname(__FILE__)."/../scripts-generic/servers.php");
@@ -233,9 +219,9 @@ try
 
     foreach($result_group as $row_group)
     {
-        $isAdmin = checkAdminForReportByAdminId($row_group["admin_id"]);
+        $isAdminForReport = checkAdminForReportByAdminId($row_group["admin_id"]);
 
-        if (($isAdmin || $isMainAdmin))
+        if (($isAdminForReport || $isMainAdmin))
         {
             $tableHeader_inner = "<th class='no-sort'><input type='checkbox' class='chb-select-all'/><a class='a-select-all'>" . $lang["table_headers"]["all"] . "</a></th>" . $tableHeader_inner_original;
         }
@@ -306,20 +292,25 @@ try
                     </thead>
                     <tbody id='table-body'>";
 
-        if ($result instanceof PDOStatement) {
+        if ($result instanceof PDOStatement)
+        {
             $report_count = $result->rowCount();
         }
 
-        if (is_array($result)) {
+        if (is_array($result))
+        {
             $report_count = count($result);
         }
 
         if ($report_count > 0)
         {
-            foreach ($result as $row) {
+            $onlyNew = True;
+
+            foreach ($result as $row)
+            {
                 $table_inner .= sprintf(
                     "<tr report_id='%d'>\n"
-                    . (($isAdmin || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
+                    . (($isAdminForReport || $isMainAdmin) ? "<td><input class='chb-report' type='checkbox' /></td>" : "") .
                     "<td><a href='http://ezpz.cz/page/report-system?report_ids=%d'>%s</a></td>\n
                     <td status_id='%d' "
                     . (($row["status_id"] == 3 or $row["status_id"] == 4 or $row["status_id"] == 5)
@@ -354,12 +345,17 @@ try
                     $row["map_id"], sprintf("http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/utils-gotv/download.php?server_id=%d&file=%s%s", $row["server_id"], ($row["path"] != "" ? $row["path"] . "/" : ""), $row["demo_file"]), $row["map"], $row["round"],
                     htmlspecialchars($row["note"])
                 );
+
+                if ($row["status_id"] != "1")
+                {
+                    $onlyNew = False;
+                }
             }
             $table_inner .= "</tbody></table>";
 
             //echo $table_inner . "<br /><br />";
 
-            if (($isAdmin || $isMainAdmin))
+            if (($isAdminForReport || $isMainAdmin))
             {
                 // <button class='button-note' >" . $lang["buttons"]["note"] . "</button>
                 $table_inner .= "
@@ -367,8 +363,20 @@ try
                     <button class='button-progress'>" . $lang["buttons"]["progress"] . "</button>
                     <button class='button-reject'>" . $lang["buttons"]["reject"] . "</button>
                     <button class='button-accept'>" . $lang["buttons"]["accept"] . "</button>
-                    <button class='button-ban' group_id='$i'>" . $lang["buttons"]["ban"] . "</button>
-                </div>";
+                    <button class='button-ban' group_id='$i'>" . $lang["buttons"]["ban"] . "</button>";
+                if ($isMainAdmin && !$isAdminForReport && $onlyNew)
+                    $table_inner .= sprintf("<button class='button-take' date_create='%s' trg_sid='%s'>" . $lang["buttons"]["take_over"] . "</button>",
+                                            $row_group["time_create_date"], $row_group["sid"]);
+
+                $table_inner .= "</div>";
+            }
+
+            if (checkAdminBySession() && $onlyNew && !$isAdminForReport && !$isMainAdmin)
+            {
+                $table_inner .= sprintf("
+                <div class='div-admin-actions'>
+                    <button class='button-take' date_create='%s' trg_sid='%s'>" . $lang["buttons"]["take_over"] . "</button>
+                </div>", $row_group["time_create_date"], $row_group["sid"]);
             }
 
             $table .= sprintf('

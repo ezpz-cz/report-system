@@ -95,23 +95,18 @@ $(document).ready(function ()
             },
             style: {
                 classes: 'qtip-tipped qtip-shadow',
-                tip: {
-                    width: 100
-                }
+                tip: false
             },
             hide: {
                 fixed: true,
                 delay: 150
             },
             position: {
-                //my: 'top center',
-                my: 'center left',
-                //at: 'bottom center',
-                at: 'bottom right',
-                target: $(element)
-                /*adjust: {
-                 y: 10
-                 }*/
+                my: 'left center',
+                at: 'right center',
+                adjust: {
+                    x: 10
+                }
             }
         });
     }
@@ -131,6 +126,7 @@ $(document).ready(function ()
         $("#input-text-reason_custom").val("");
         $("#input-check-my_reports").attr("checked", false);
         $("#input-text-report_ids").prop("disabled", false);
+        showUrl();
     }
 
     function getTodayDate()
@@ -658,6 +654,33 @@ $(document).ready(function ()
                     }
                 }
             });
+    });
+
+    $('#div-table').on('click', '.button-take', function ()
+    {
+        var button = $(this);
+
+        var reports = $(button).parent().prev("div").find("tr[report_id]").each(function() {
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/r_takeOver.php",
+                    data: {
+                        "report_id": $(this).attr("report_id")
+                    },
+                    success: function(response)
+                    {
+                        if (response.success)
+                        {
+                            $("#input-date-from").val(button.attr("date_create"));
+                            $("#input-date-to").val(button.attr("date_create"));
+                            $("#input-text-target").val(button.attr("trg_sid"));
+
+                            $("#button-search").trigger("click");
+                        }
+                    }
+                });
+        });
     });
 
     /*$('#div-table').on('click', '.button-note', function ()
