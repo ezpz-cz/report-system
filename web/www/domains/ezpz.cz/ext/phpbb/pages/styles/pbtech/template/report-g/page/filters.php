@@ -14,6 +14,9 @@
         margin-right: 1em;
         font-size: medium;
     }
+    td[colspan="4"]{
+        padding: 0;
+    }
 </style>
 <script>
 
@@ -171,16 +174,16 @@ $(document).ready(function(){
 
         <button class="btn btn-default" id="button-reset"><?php echo $translation["page_filters"]["button_reset_filter"] ?></button>
 
-<!--        <div style="padding-left: 5px; display: inline; border-left: thick solid #000000;">-->
-<!---->
-<!--        <!--<button class="btn btn-default" id="button-today">--><?php //echo $translation["page_filters"]["button_today"] ?><!--</button>-->
+<!--        <div style="padding-left: 5px; display: inline; border-left: thick solid #000000;">
 
-            <?php
+            <button class="btn btn-default" id="button-today"><php //echo $translation["page_filters"]["button_today"] ?></button>-->
+
+            <!--<php
                 if ($isAdmin)
                 {
                     echo "<button class=\"btn btn-default\" id=\"button-my-today\" admin_id='" . $_SESSION['ezpz_sb_admin_id'] . "'>" . $translation["page_filters"]["button_my_today_reports"] . "</button>";
                 }
-            ?>
+            ?>-->
 
         </div>
         <br />

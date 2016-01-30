@@ -71,7 +71,7 @@ $(document).ready(function ()
                 {
                     table = $('#table-reports-group').DataTable({
                         "order": [[ 0, 'desc' ]],
-                        "scrollX": true
+                        //"scrollX": true
                     });
 
                     //$('#table-reports-group thead').remove();
@@ -302,6 +302,7 @@ $(document).ready(function ()
                 "&reporter=" + encodeURIComponent($("#input-text-reporter").val()) +
                 //"&map_id=" + encodeURIComponent($("#select-map").find(":selected").attr("map_id")) +
                 "&admin_id=" + encodeURIComponent($("#input-check-my_reports").attr("admin_id"));
+
         }
         else
         {
@@ -346,7 +347,7 @@ $(document).ready(function ()
             }
         }
 
-        //console.log(url);
+        console.log(url);
 
         loadTable(url);
         //loadTable(url);
@@ -439,7 +440,7 @@ $(document).ready(function ()
             $(tr).next("tr").find(".table-reports:first").DataTable({
                 "order": [[ 1, 'desc' ]],
                 "columnDefs": [ { "targets": "no-sort", "orderable": false } ],
-                "scrollX": true,
+                //"scrollX": true,
                 "paging":   false,
                 "ordering": false,
                 "info":     false,
