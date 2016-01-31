@@ -182,7 +182,7 @@ try
         $where_group
         GROUP BY DAY(time_create_date), target_id";
 
-    //print_r($parameters_group);
+    //print_r($parameters);
     //echo "$query_group <br /><br />";
 
     $result_group = getPDOParametrizedQueryResult($pdo, $query_group, $parameters_group, __FILE__, __LINE__);

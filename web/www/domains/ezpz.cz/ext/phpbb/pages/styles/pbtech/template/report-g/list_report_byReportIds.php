@@ -46,7 +46,7 @@ try
     }
 
     //print_r($_GET['report_ids']);
-    //echo $where_report_id;
+    //echo $where;
 
     $query_group = "
     SELECT COUNT(*) AS report_count, r.target_id, p.nick, p.sid, p.ip, p.hlstats_id, a.name AS admin_name, a.id AS admin_id, DATE(time_create) AS time_create_date, r.id AS report_id
@@ -56,7 +56,7 @@ try
     WHERE $where_report_id
     GROUP BY DAY(time_create_date), target_id";
 
-    //print_r($parameters_group);
+    //print_r($parameters);
     //echo "date_create_from: $by_date_create_from | date_create_to: $by_date_create_to <br />";
     //echo $query_group . "<br /><br />";
 
@@ -94,7 +94,7 @@ try
 
     foreach ($result_group as $row_group)
     {
-        //echo "session admin id:" . $_SESSION['ezpz_sb_admin_id'] . ", DB admin id: " . $row_group["admin_id"] . "<br />";
+        //echo "session admin id:" . $_SESSION['ezpz_sb_admin_id'] . ", DB admin id: " . $row["admin_id"] . "<br />";
 
         $isAdminForReport = checkAdminForReportByAdminId($row_group["admin_id"]);
 
@@ -151,7 +151,7 @@ try
             GROUP BY r.id",
             $row_group["target_id"], $row_group["time_create_date"], $row_group["time_create_date"]);
 
-        //$where_report_id
+        //$where
         //echo $query . "<br /><br />";
 
         $result = getPDOParametrizedQueryResult($pdo, $query, $parameters_report_id, __FILE__, __LINE__);
@@ -253,7 +253,7 @@ try
                 "http://ezpz.cz/page/utilities-chatlog?steamid=" . $row_group["sid"],
                 "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row_group["sid"],
                 htmlspecialchars($row_group["nick"]),
-                //$row_group["report_count"],
+                //$row["report_count"],
                 $report_count,
                 htmlspecialchars($row_group["admin_name"]));
 
