@@ -432,32 +432,51 @@ $(document).ready(function ()
         {
             var rc = row.child("<div class='div-inner-reports'></div>").show();
             var table_div = tr.next().find(".div-inner-reports");
-            table_div.html("<div id='div-loader'><img src='http://ezpz.cz/ext/phpbb/pages/styles/pbtech/theme/ajax-loader-small.gif' alt='Loading...' style='display: block; margin-left: auto; margin-right: auto;' /></div>");
-            var report_ids = tr.attr("report_ids").split(",");
-            var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/getReports.php?lang=en&report_ids[]=" +
-                (report_ids.length > 0 ? report_ids.join("&report_ids[]=") : report_ids[0])
 
-            //console.log(url);
+            if (tr.attr("table-inner"))
+            {
+                table_div.html(tr.attr("table-inner"));
+                table_div.children(".table-reports").DataTable({
+                    "order": [[ 1, 'desc' ]],
+                    "columnDefs": [ { "targets": "no-sort", "orderable": false } ],
+                    //"scrollX": true,
+                    "paging":   false,
+                    "ordering": false,
+                    "info":     false,
+                    "sDom": 'lrtip'
+                });
+                tr.addClass('shown');
+            }
+            else
+            {
+                table_div.html("<div id='div-loader'><img src='http://ezpz.cz/ext/phpbb/pages/styles/pbtech/theme/ajax-loader-small.gif' alt='Loading...' style='display: block; margin-left: auto; margin-right: auto;' /></div>");
+                var report_ids = tr.attr("report_ids").split(",");
+                var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/getReports.php?lang=en&report_ids[]=" +
+                    (report_ids.length > 0 ? report_ids.join("&report_ids[]=") : report_ids[0]);
 
-            $.ajax({
-                url: url,
-                success: function(result) {
-                    if (result.success)
-                    {
-                        table_div.html(result.data);
-                        table_div.children(".table-reports").DataTable({
-                            "order": [[ 1, 'desc' ]],
-                            "columnDefs": [ { "targets": "no-sort", "orderable": false } ],
-                            //"scrollX": true,
-                            "paging":   false,
-                            "ordering": false,
-                            "info":     false,
-                            "sDom": 'lrtip'
-                        });
-                        tr.addClass('shown');
+                //console.log(url);
+
+                $.ajax({
+                    url: url,
+                    success: function(result) {
+                        if (result.success)
+                        {
+                            table_div.html(result.data);
+                            table_div.children(".table-reports").DataTable({
+                                "order": [[ 1, 'desc' ]],
+                                "columnDefs": [ { "targets": "no-sort", "orderable": false } ],
+                                //"scrollX": true,
+                                "paging":   false,
+                                "ordering": false,
+                                "info":     false,
+                                "sDom": 'lrtip'
+                            });
+                            tr.addClass('shown');
+                            tr.attr("table-inner", table_div.prop('outerHTML'));
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     });
 
