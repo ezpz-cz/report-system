@@ -28,7 +28,7 @@ if (!isset($_GET["rep_ip"]))
     die("reason_ids are not set! Expecting array: reason_ids[]=1&reason_ids[]=2&reason_ids[]=3");*/
 
 if (!isset($_GET["lang"]))
-     die("lang is not set!");
+    die("lang is not set!");
 
 if (!isset($_GET["map"]))
     die("map is not set!");
@@ -186,73 +186,53 @@ try
 
     $result = getPDOParametrizedQueryResult($pdo, $query, $parameters, __FILE__, __LINE__);
 
-    //print_r($result);
-
+    // find suitable admin for this report (his id)
     if (count($result) == 0)
     {
-        // find suitable admin for this report (his id)
         // first find admins with lowest number of finished reports
         $admins = getAdminsReports();
-        //print_r($admins);
-        $i = 0;
-        $min = 0;
-        $lastKey = 0;
+        $admins_finished = array();
 
-        foreach($admins as $key => $value)
+        $min = $admins[0]["count_report_finished"];
+
+        for ($i = 1; $i < count($admins); $i++)
         {
-            if ($i == 0)
+            if ($admins[$i]["count_report_finished"] < $min)
             {
-                $min = $value["count_report_finished"];
+                $min = $admins[$i]["count_report_finished"];
+                $admins_finished = array($admins[$i]);
             }
-            else
+            elseif ($admins[$i]["count_report_finished"] == $min)
             {
-                if ($value["count_report_finished"] > $min)
-                {
-                    unset($admins[$key]);
-                }
-
-                if ($value["count_report_finished"] < $min)
-                {
-                    $min = $value["count_report_finished"];
-                    unset($admins[$lastKey]);
-                }
+                $admins_finished[] = $admins[$i];
             }
-
-            $lastKey = $key;
-            $i++;
-        }
-        //print_r($admins);
-        // find admins with lowest number of new reports
-        $i = 0;
-        $min = 0;
-        $lastKey = 0;
-
-        foreach($admins as $key => $value)
-        {
-            if ($i == 0)
-            {
-                $min = $value["count_report_new"];
-            }
-            else
-            {
-                if ($value["count_report_new"] > $min)
-                {
-                    unset($admins[$key]);
-                }
-
-                if ($value["count_report_new"] < $min)
-                {
-                    $min = $value["count_report_new"];
-                    unset($admins[$lastKey]);
-                }
-            }
-
-            $lastKey = $key;
-            $i++;
         }
 
-        // choose one admin_id
-        $admin_id = array_rand($admins);
+        if (count($admins_finished) == 1)
+        {
+            $admin_id = $admins_finished[0]["admin_id"];
+        }
+        else
+        {
+            $admins_new = array();
+            $min = $admins_finished[0]["count_report_new"];
+
+            for ($i = 1; $i < count($admins_finished); $i++)
+            {
+                if ($admins_finished[$i]["count_report_new"] < $min)
+                {
+                    $min = $admins[$i]["count_report_new"];
+                    $admins_new = array($admins_finished[$i]);
+                }
+                elseif ($admins[$i]["count_report_new"] == $min)
+                {
+                    $admins_new[] = $admins_finished[$i];
+                }
+            }
+
+            // choose one admin_id randomly
+            $admin_id = array_rand($admins_new);
+        }
     }
     else
     {
@@ -292,6 +272,8 @@ try
                 PDOExecParametrizedQuery($pdo, $query, $parameters, __FILE__, __LINE__);
             }
         }
+
+        header('Content-Type: application/json');
 
         echo json_encode(array(
             "success" => True,
@@ -335,8 +317,8 @@ try
     }
     else
     {
-        print_r($admins);
-        echo $admin_id;
+        print_r($admins_new);
+        echo "selected admin_id: $admin_id";
     }
 }
 catch(Exception $ex)
