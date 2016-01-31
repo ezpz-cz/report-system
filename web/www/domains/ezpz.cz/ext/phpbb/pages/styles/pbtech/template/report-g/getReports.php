@@ -106,7 +106,10 @@ try
         throw new Exception("Cannot get the query result!");
     }
 
-    $isAdminForReport = checkAdminForReportByReportId($by_report_ids[0]);
+    foreach ($by_report_ids as $id)
+    {
+        $isAdminForReport = checkAdminForReportByReportId($id);
+    }
 
     if (($isAdminForReport || $isMainAdmin))
     {
