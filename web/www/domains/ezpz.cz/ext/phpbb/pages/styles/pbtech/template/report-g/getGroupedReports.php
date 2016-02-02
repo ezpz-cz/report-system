@@ -32,12 +32,12 @@ try
 
     $pdo = getPDOConnection();
 
-    $where = " WHERE ";
+    $conditions = array();
+    $parameters = array();
 
-    if (isset($_GET["report_ids"]) AND count($_GET["report_ids"]) > 0)
+    if (isset($_GET["report_ids"]) AND $_GET["report_ids"][0] != "")
     {
         $by_report_ids = $_GET["report_ids"];
-        $parameters = array();
         $id_count = count($by_report_ids);
 
         if ($id_count > 1)
@@ -54,7 +54,7 @@ try
         }
         else
         {
-            $where .= "r.id = :report_id";
+            $conditions[] = "r.id = :report_id";
             $parameters[":report_id"] = $by_report_ids[0];
         }
     }
@@ -71,10 +71,6 @@ try
 
         $by_map_id = $_GET['map_id'];
         $by_admin_id = intval($_GET['admin_id']);
-
-        $conditions = array();
-        $parameters = array();
-        $where = "";
 
         if ($server != NULL)
         {
@@ -154,27 +150,34 @@ try
 
         if (($by_date_create_from != "" and $by_date_create_to == ""))
         {
-            $where = " WHERE DATE(time_create) >= :time_create";
-            $parameters = array(":time_create" => $by_date_create_from);
+            $conditions[] = "DATE(time_create) >= :time_create_from";
+            $parameters[":time_create_from"] = $by_date_create_from;
         }
         else if (($by_date_create_from == "" and $by_date_create_to != ""))
         {
-            $where = " WHERE DATE(time_create) <= :time_create";
-            $parameters = array(":time_create" => $by_date_create_to);
+            $conditions[] = "DATE(time_create) <= :time_create_to";
+            $parameters[":time_create_to"] = $by_date_create_to;
         }
         else if (($by_date_create_from != "" and $by_date_create_to != ""))
         {
-            $where = " WHERE DATE(time_create) BETWEEN :time_create_from AND :time_create_to";
-            $parameters = array(":time_create_from" => $by_date_create_from, ":time_create_to" => $by_date_create_to);
+            $conditions[] = "DATE(time_create) BETWEEN :time_create_from AND :time_create_to";
+            $parameters[":time_create_from"] = $by_date_create_from;
+            $parameters[":time_create_to"] = $by_date_create_to;
         }
+    }
 
-        if (count($conditions) > 1) {
-            $where = " AND " . implode(' AND ', $conditions);
-        }
-
-        if (count($conditions) == 1) {
-            $where = " AND " . $conditions[0];
-        }
+    if (count($conditions) > 1)
+    {
+        $where = implode(' AND ', $conditions);
+        $where = " WHERE " . $where;
+    }
+    elseif (count($conditions) == 1)
+    {
+        $where = " WHERE " . $conditions[0];
+    }
+    elseif (count($conditions) == 0)
+    {
+        $where = "";
     }
 
     $query = "
