@@ -452,7 +452,8 @@ $(document).ready(function ()
                 table_div.html("<div id='div-loader'><img src='http://ezpz.cz/ext/phpbb/pages/styles/pbtech/theme/ajax-loader-small.gif' alt='Loading...' style='display: block; margin-left: auto; margin-right: auto;' /></div>");
                 var report_ids = tr.attr("report_ids").split(",");
                 var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/getReports.php?lang=en&report_ids[]=" +
-                    (report_ids.length > 0 ? report_ids.join("&report_ids[]=") : report_ids[0]);
+                    (report_ids.length > 0 ? report_ids.join("&report_ids[]=") : report_ids[0]) +
+                    "&group_id=" + tr.attr("group_id");
 
                 //console.log(url);
 
@@ -634,7 +635,12 @@ $(document).ready(function ()
             report_ids.push($(this).attr("report_id"));
         });
 
-        var ban_info = button.closest("#table-reports-group").find("tr[group_id=" + button.attr("group_id") + "]").find("td.cell-target");
+        //var ban_info = button.closest("#table-reports-group").find("tr[group_id='" + button.attr("group_id") + "']").find("td.cell-target");
+        var ban_info = $("tr[group_id='" + button.attr("group_id") + "']").find("td.cell-target");
+
+        //console.log(button);
+        //console.log(reports);
+        //console.log(ban_info);
 
         button.attr("href", "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/report_actions/addban_report.html?" +
             "nickname=" + encodeURIComponent(ban_info.attr("trg_nick")) +

@@ -6,6 +6,9 @@ if (!isset($_GET["lang"]))
 if (!isset($_GET["report_ids"]))
     die("report_ids is not set!");
 
+if (!isset($_GET["group_id"]))
+    die("group_id is not set!");
+
 session_start();
 
 try
@@ -20,6 +23,7 @@ try
     $isMainAdmin = checkMainAdmin();
 
     $lang = getReportTranslation($_GET["lang"]);
+    $group_id = $_GET["group_id"];
 
     $pdo = getPDOConnection();
 
@@ -189,7 +193,7 @@ try
             <button class='button-progress'>" . $lang["buttons"]["progress"] . "</button>
             <button class='button-reject'>" . $lang["buttons"]["reject"] . "</button>
             <button class='button-accept'>" . $lang["buttons"]["accept"] . "</button>
-            <button class='button-ban' group_id='$i'>" . $lang["buttons"]["ban"] . "</button>";
+            <button class='button-ban' group_id='$group_id'>" . $lang["buttons"]["ban"] . "</button>";
         if ($isMainAdmin && !$isAdminForReport && $onlyNew)
             $table_inner .= sprintf("<button class='button-take' date_create='%s' trg_sid='%s'>" . $lang["buttons"]["take_over"] . "</button>",
                 $row_group["time_create_date"], $row_group["sid"]);

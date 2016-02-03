@@ -259,7 +259,7 @@ try
             $row["time_create_date"], $row["time_create_date"], $row["trg_sid"], $row["time_create_date"],
             $row["trg_sid"],
             $row["trg_ip"],
-            htmlspecialchars($row["nick"]),
+            htmlspecialchars($row["trg_nick"]),
             "http://stats.ezpz.cz/hlstats.php?mode=playerinfo&player=" . $row["hlstats_id"],
             "http://ezpz.cz/page/utilities-chatlog?steamid=" . $row["trg_sid"],
             "http://ezpz.cz/page/utilities-connectlog?steamid=" . $row["trg_sid"],
