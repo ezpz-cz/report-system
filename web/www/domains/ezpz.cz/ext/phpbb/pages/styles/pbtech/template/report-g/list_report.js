@@ -802,8 +802,7 @@ $(document).ready(function ()
 
     $('#div-table').on('change', '.chb-select-all', function() {
         var chbAll = $(this);
-        //var chbs = chbAll.closest("table").find(".chb-report");
-        var chbs = chbAll.closest(".dataTables_scroll").find(".chb-report");
+        var chbs = chbAll.parents("thead").next("tbody").find("input.chb-report");
 
         if (chbAll.prop("checked"))
         {
@@ -828,7 +827,7 @@ $(document).ready(function ()
     $('#div-table').on('click', '.a-select-all', function() {
         var a = $(this);
         var chbAll = a.prev("input.chb-select-all");
-        var chbs = chbAll.closest(".dataTables_scroll").find(".chb-report");
+        var chbs = chbAll.parents("thead").next("tbody").find("input.chb-report");
 
         if (chbAll.prop("checked"))
         {
