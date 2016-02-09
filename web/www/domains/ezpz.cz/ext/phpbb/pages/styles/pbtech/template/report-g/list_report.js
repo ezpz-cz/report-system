@@ -453,7 +453,8 @@ $(document).ready(function ()
                 var report_ids = tr.attr("report_ids").split(",");
                 var url = "http://ezpz.cz/ext/phpbb/pages/styles/pbtech/template/report-g/getReports.php?lang=en&report_ids[]=" +
                     (report_ids.length > 0 ? report_ids.join("&report_ids[]=") : report_ids[0]) +
-                    "&group_id=" + tr.attr("group_id");
+                    "&group_id=" + tr.attr("group_id") +
+                    "&lang=" + lang;
 
                 //console.log(url);
 
