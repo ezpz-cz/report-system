@@ -185,24 +185,27 @@ try
         DATE(time_create) AS time_create_date,
         GROUP_CONCAT(r.id SEPARATOR ',') AS report_ids,
         a.name AS admin_name, a.id AS admin_id,
-        trg.nick AS trg_nick, trg.ip AS trg_ip, trg.sid AS trg_sid, trg.hlstats_id
+        trg.nick AS trg_nick,
+        trg.ip AS trg_ip,
+        trg.sid AS trg_sid,
+        trg.hlstats_id
       FROM
         `ezpz-report-g`.report_report AS r
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_report_reason AS rs_join ON rs_join.report_id = r.id
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_reason AS rs ON rs.id = rs_join.reason_id
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_players AS rep ON rep.id = r.reporter_id
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_players AS trg ON trg.id = r.target_id
-      JOIN
+      LEFT JOIN
         `soe-csgo`.utils_servers AS s ON s.server_id = r.server_id
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_status AS st ON st.id = r.status_id
-      JOIN
+      LEFT JOIN
         `ezpz-report-g`.report_map AS m ON m.id = r.map_id
-      JOIN
+      LEFT JOIN
         `soe-csgo`.sb_admins AS a ON a.id = r.admin_id"
       . $where . "
       GROUP BY
@@ -273,6 +276,11 @@ try
                 </table>";
 
     //echo $table;
+
+    if ($_GET["debug"])
+    {
+        echo $query;
+    }
 
     header('Content-Type: application/json');
 
