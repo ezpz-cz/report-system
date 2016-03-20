@@ -86,11 +86,6 @@ $(document).ready(function ()
         showUrl();
     }
 
-    function loadInnerTable(report_ids)
-    {
-
-    }
-
     function showBubble(element, content)
     {
         $(element).qtip({

@@ -214,17 +214,17 @@ try
         }
         else
         {
-            $admins_new = array();
             $min = $admins_finished[0]["count_report_new"];
+            $admins_new = array($admins_finished[0]);
 
             for ($i = 1; $i < count($admins_finished); $i++)
             {
                 if ($admins_finished[$i]["count_report_new"] < $min)
                 {
-                    $min = $admins[$i]["count_report_new"];
-                    $admins_new = array($admins_finished[$i]);
+                    $min = $admins_finished[$i]["count_report_new"];
+                    $admins_new[$i-1] = $admins_finished[$i];
                 }
-                elseif ($admins[$i]["count_report_new"] == $min)
+                elseif ($admins_finished[$i]["count_report_new"] == $min)
                 {
                     $admins_new[] = $admins_finished[$i];
                 }
@@ -232,6 +232,7 @@ try
 
             // choose one admin_id randomly
             $admin_id = array_rand($admins_new);
+            $admin_id = $admins_new[$admin_id]["admin_id"];
         }
     }
     else
