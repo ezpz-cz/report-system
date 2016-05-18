@@ -191,10 +191,10 @@ try
     {
         // first find admins with lowest number of finished reports
         $admins = getAdminsReports();
-        $admins_finished = array();
-
+        
         $min = $admins[0]["count_report_finished"];
-
+        $admins_finished = array($admins[0]);
+        
         for ($i = 1; $i < count($admins); $i++)
         {
             if ($admins[$i]["count_report_finished"] < $min)
@@ -207,7 +207,7 @@ try
                 $admins_finished[] = $admins[$i];
             }
         }
-
+        
         if (count($admins_finished) == 1)
         {
             $admin_id = $admins_finished[0]["admin_id"];
@@ -318,6 +318,8 @@ try
     }
     else
     {
+        print_r($admins);
+        print_r($admins_finished);
         print_r($admins_new);
         echo "selected admin_id: $admin_id";
     }
