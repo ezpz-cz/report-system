@@ -189,6 +189,9 @@ try
     // find suitable admin for this report (his id)
     if (count($result) == 0)
     {
+        $result = getPDOQueryResult($pdo, "SELECT id, name FROM `soe-csgo`.sb_admins WHERE active = 1", __FILE__, __LINE__);
+        $admin_id = $result[array_rand($result)]["id"];
+        /*
         // first find admins with lowest number of finished reports
         $admins = getAdminsReports();
         
@@ -233,7 +236,9 @@ try
             // choose one admin_id randomly
             $admin_id = array_rand($admins_new);
             $admin_id = $admins_new[$admin_id]["admin_id"];
+          
         }
+        */
     }
     else
     {
@@ -321,6 +326,8 @@ try
         print_r($admins);
         print_r($admins_finished);
         print_r($admins_new);
+        print_r($result);
+        print_r(array_rand($result));
         echo "selected admin_id: $admin_id";
     }
 }
